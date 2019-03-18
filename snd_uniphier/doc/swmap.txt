@@ -1,0 +1,339 @@
+static const struct uniphier_stream_spec stream_specs_aio2013[] = {
+	/* for HDMI PCM
+	 *   hw : RB14 <- CH14 <- PBin3 <- IPort0 (PCMIN1) <- Pin AI1D*
+	 *   map: (RB, CH, PBin, IPort) = (21, 21, 5, 0)
+	 */
+	{
+		.name = AUD_NAME_PCMIN1,
+		.gname = AUD_GNAME_HDMI,
+		.swm = {
+			.type      = PORT_TYPE_INPUT,
+			.rb_hw     = 14,
+			.ch_hw     = 14,
+			.iif_hw    = 3,
+			.iport_hw  = AUD_HW_PCMIN1,
+
+			.rb_map    = 21,
+			.ch_map    = 21,
+			.iif_map   = 5,
+			.iport_map = 0,
+		},
+		.ops = &aio_pcm_cap_ops,
+	},
+
+	/* for SIF
+	 *   hw : RB15 <- CH15 <- PBin4 <- IPort1 (PCMIN2) <- Pin AI2D*
+	 *   map: (RB, CH, PBin, IPort) = (22, 22, 6, 1)
+	 */
+	{
+		.name = AUD_NAME_PCMIN2,
+		.swm = {
+			.type      = PORT_TYPE_INPUT,
+			.rb_hw     = 15,
+			.ch_hw     = 15,
+			.iif_hw    = 4,
+			.iport_hw  = AUD_HW_PCMIN2,
+
+			.rb_map    = 22,
+			.ch_map    = 22,
+			.iif_map   = 6,
+			.iport_map = 1,
+		},
+		.ops = &aio_pcm_cap_ops,
+	},
+
+	/* for Line In
+	 *   hw : RB16 <- CH16 <- PBin5 <- IPort2 (PCMIN3) <- Pin AI3D*
+	 *   map: (RB, CH, PBin, IPort) = (23, 23, 7, 2)
+	 */
+	{
+		.name = AUD_NAME_PCMIN3,
+		.gname = AUD_GNAME_LINE,
+		.swm = {
+			.type      = PORT_TYPE_INPUT_EVE,
+			.rb_hw     = 16,
+			.ch_hw     = 16,
+			.iif_hw    = 5,
+			.iport_hw  = AUD_HW_PCMIN3,
+
+			.rb_map    = 23,
+			.ch_map    = 23,
+			.iif_map   = 7,
+			.iport_map = 2,
+		},
+		.ops = &aio_pcm_cap_ops,
+	},
+
+	/* for IEC
+	 *   hw : RB17 <- CH17 <- PBin6 <- IPort3 (IECIN1) <- Pin AI1IEC
+	 *   map: (RB, CH, PBin, IPort) = (26, 26, 10, 3)
+	 */
+	{
+		.name = AUD_NAME_IECIN1,
+		.gname = AUD_GNAME_IEC,
+		.swm = {
+			.type      = PORT_TYPE_INPUT,
+			.rb_hw     = 17,
+			.ch_hw     = 17,
+			.iif_hw    = 6,
+			.iport_hw  = AUD_HW_IECIN1,
+
+			.rb_map    = 26,
+			.ch_map    = 26,
+			.iif_map   = 10,
+			.iport_map = 3,
+		},
+		.ops = &aio_pcm_cap_ops,
+	},
+
+	/* for Delayed IEC
+	 *   hw : RB17 <- CH17 <- PBin6 <- IPort4 (DIECIN1) <- Pin AI1IEC
+	 *   map: (RB, CH, PBin, IPort) = (26, 26, 10, 16)
+	 */
+	{
+		.name = AUD_NAME_DIECIN1,
+		.swm = {
+			.type      = PORT_TYPE_INPUT,
+			.rb_hw     = 17,
+			.ch_hw     = 17,
+			.iif_hw    = 6,
+			.iport_hw  = AUD_HW_DIECIN1,
+
+			.rb_map    = 26,
+			.ch_map    = 26,
+			.iif_map   = 10,
+			.iport_map = 16,
+		},
+		.ops = &aio_pcm_cap_ops,
+	},
+
+	/* for Speaker
+	 *   hw : RB0 -> CH0 -> PBout0 -> OPort0 (HPCMOUT1) -> Pin AO1D*
+	 *   map: (RB, CH, PBout, OPort) = (0, 0, 0, 0)
+	 */
+	{
+		.name = AUD_NAME_HPCMOUT1,
+		.swm = {
+			.type      = PORT_TYPE_OUTPUT,
+			.rb_hw     = 0,
+			.ch_hw     = 0,
+			.oif_hw    = 0,
+			.oport_hw  = AUD_HW_HPCMOUT1,
+
+			.rb_map    = 0,
+			.ch_map    = 0,
+			.oif_map   = 0,
+			.oport_map = 0,
+		},
+		.ops = &aio_pcm_play_ops,
+	},
+
+	/* for HDMI PCM
+	 *   hw : RB0 -> CH0 -> PBout0 -> OPort1 (PCMOUT1) -> Pin AO2D*
+	 *   map: (RB, CH, PBout, OPort) = (0, 0, 0, 3)
+	 */
+	{
+		.name = AUD_NAME_PCMOUT1,
+		.gname = AUD_GNAME_HDMI,
+		.swm = {
+			.type      = PORT_TYPE_OUTPUT,
+			.rb_hw     = 0,
+			.ch_hw     = 0,
+			.oif_hw    = 0,
+			.oport_hw  = AUD_HW_PCMOUT1,
+
+			.rb_map    = 0,
+			.ch_map    = 0,
+			.oif_map   = 0,
+			.oport_map = 3,
+		},
+		.ops = &aio_pcm_play_ops,
+	},
+
+	/* for Line Out
+	 *   hw : RB2 -> CH2 -> PBout2 -> OPort2 (PCMOUT2) -> Pin LO2_*
+	 *   map: (RB, CH, PBout, OPort) = (2, 2, 2, 1)
+	 */
+	{
+		.name = AUD_NAME_PCMOUT2,
+		.gname = AUD_GNAME_LINE,
+		.swm = {
+			.type      = PORT_TYPE_OUTPUT_EVE,
+			.rb_hw     = 2,
+			.ch_hw     = 2,
+			.oif_hw    = 2,
+			.oport_hw  = AUD_HW_PCMOUT2,
+
+			.rb_map    = 2,
+			.ch_map    = 2,
+			.oif_map   = 2,
+			.oport_map = 1,
+		},
+		.ops = &aio_pcm_play_ops,
+	},
+
+	/* for Headphone
+	 *   hw : RB3 -> CH3 -> PBout3 -> OPort3 (PCMOUT3) -> Pin HP1_*
+	 *   map: (RB, CH, PBout, OPort) = (3, 3, 3, 2)
+	 */
+	{
+		.name = AUD_NAME_PCMOUT3,
+		.swm = {
+			.type      = PORT_TYPE_OUTPUT_EVE,
+			.rb_hw     = 3,
+			.ch_hw     = 3,
+			.oif_hw    = 3,
+			.oport_hw  = AUD_HW_PCMOUT3,
+
+			.rb_map    = 3,
+			.ch_map    = 3,
+			.oif_map   = 3,
+			.oport_map = 2,
+		},
+		.ops = &aio_pcm_play_ops,
+
+		.has_jack = 1,
+	},
+
+	/* for HW Sampling Rate Converter
+	 *   hw : RB4 -> CH4 -> PBout4 -> OPort4 (EPCMOUT1)
+	 *   map: (RB, CH, PBout, OPort) = (6, 6, 6, 4)
+	 */
+	{
+		.name = AUD_NAME_EPCMOUT1,
+		.swm = {
+			.type      = PORT_TYPE_OUTPUT_CONV,
+			.rb_hw     = 4,
+			.ch_hw     = 4,
+			.oif_hw    = 4,
+			.oport_hw  = AUD_HW_EPCMOUT1,
+
+			.rb_map    = 6,
+			.ch_map    = 6,
+			.oif_map   = 6,
+			.oport_map = 4,
+		},
+		.ops = &aio_pcm_src_ops,
+	},
+
+	/* for HW Sampling Rate Converter
+	 *   hw : RB5 -> CH5 -> PBout5 -> OPort5 (EPCMOUT2)
+	 *   map: (RB, CH, PBout, OPort) = (7, 7, 7, 6)
+	 *   hw : CH12 <- PBin1
+	 *   map: (CH, PBin) = (17, 1)
+	 */
+	{
+		.name = AUD_NAME_EPCMOUT2,
+		.swm = {
+			.type      = PORT_TYPE_OUTPUT_CONV,
+			.rb_hw     = 5,
+			.ch_hw     = 5,
+			.oif_hw    = 5,
+			.oport_hw  = AUD_HW_EPCMOUT2,
+			.och_hw    = 12,
+			.iif_hw    = 1,
+
+			.rb_map    = 7,
+			.ch_map    = 7,
+			.oif_map   = 7,
+			.oport_map = 6,
+			.och_map   = 17,
+			.iif_map   = 1,
+		},
+		.ops = &aio_pcm_src_ops,
+	},
+
+	/* for HW Sampling Rate Converter
+	 *   hw : RB6 -> CH6 -> PBout6 -> OPort6 (EPCMOUT3)
+	 *   map: (RB, CH, PBout, OPort) = (8, 8, 8, 7)
+	 *   hw : CH13 <- PBin2
+	 *   map: (CH, PBin) = (18, 2)
+	 */
+	{
+		.name = AUD_NAME_EPCMOUT3,
+		.swm = {
+			.type      = PORT_TYPE_OUTPUT_CONV,
+			.rb_hw     = 6,
+			.ch_hw     = 6,
+			.oif_hw    = 6,
+			.oport_hw  = AUD_HW_EPCMOUT3,
+			.och_hw    = 13,
+			.iif_hw    = 2,
+
+			.rb_map    = 8,
+			.ch_map    = 8,
+			.oif_map   = 8,
+			.oport_map = 7,
+			.och_map   = 18,
+			.iif_map   = 2,
+		},
+		.ops = &aio_pcm_src_ops,
+	},
+
+	/* for HW Sampling Rate Converter
+	 *   hw : RB8 -> CH8 -> PBout8 -> OPort9 (EPCMOUT6)
+	 *   map: (RB, CH, PBout, OPort) = (12, 12, 12, 5)
+	 */
+	{
+		.name = AUD_NAME_EPCMOUT6,
+		.swm = {
+			.type      = PORT_TYPE_OUTPUT_CONV,
+			.rb_hw     = 8,
+			.ch_hw     = 8,
+			.oif_hw    = 8,
+			.oport_hw  = AUD_HW_EPCMOUT6,
+
+			.rb_map    = 12,
+			.ch_map    = 12,
+			.oif_map   = 12,
+			.oport_map = 5,
+		},
+		.ops = &aio_pcm_src_ops,
+	},
+
+	/* for S/PDIF
+	 *   hw : RB1 -> CH1 -> PBout1 -> OPort10 (HIECOUT1) -> Pin AO1IEC
+	 *        or AO1ARC
+	 *   map: (RB, CH, PBout, OPort) = (1, 1, 1, 12)
+	 */
+	{
+		.name = AUD_NAME_HIECOUT1,
+		.gname = AUD_GNAME_IEC,
+		.swm = {
+			.type      = PORT_TYPE_OUTPUT,
+			.rb_hw     = 1,
+			.ch_hw     = 1,
+			.oif_hw    = 1,
+			.oport_hw  = AUD_HW_HIECOUT1,
+
+			.rb_map    = 1,
+			.ch_map    = 1,
+			.oif_map   = 1,
+			.oport_map = 12,
+		},
+		.ops = &aio_iec_thr_play_ops,
+	},
+
+	/* for HDMI IEC
+	 *   hw : RB1 -> CH1 -> PBout1 -> OPort11 (IECOUT1) -> Pin AO2IEC
+	 *        or AO1ARC
+	 *   map: (RB, CH, PBout, OPort) = (1, 1, 1, 13)
+	 */
+	{
+		.name = AUD_NAME_IECOUT1,
+		.gname = AUD_GNAME_HDMI,
+		.swm = {
+			.type      = PORT_TYPE_OUTPUT,
+			.rb_hw     = 7,
+			.ch_hw     = 7,
+			.oif_hw    = 7,
+			.oport_hw  = AUD_HW_IECOUT1,
+
+			.rb_map    = 11,
+			.ch_map    = 11,
+			.oif_map   = 11,
+			.oport_map = 13,
+		},
+		.ops = &aio_iec_thr_play_ops,
+	},
+};

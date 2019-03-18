@@ -1,0 +1,1 @@
+source "drivers/uniphier/audio/snd_uniphier/Kconfig"

@@ -1,0 +1,157 @@
+
+static void i2s_pcm_sync_single(struct uniphier_pcm_sub *sb,
+				u32 st_off, u32 end_off, int for_cpu,
+				enum dma_data_direction dir)
+{
+	struct snd_pcm_runtime *runtime = sb->substream->runtime;
+	struct snd_soc_pcm_runtime *rtd = snd_pcm_substream_chip(sb->substream);
+	struct snd_card *card = rtd->card->snd_card;
+	dma_addr_t pos_a, pos_b;
+	size_t sz_a = 0, sz_b = 0;
+
+	/* tentative: do not use cache */
+	return;
+
+	if (st_off < end_off) {
+		pos_a = runtime->dma_addr + st_off;
+		sz_a = end_off - st_off;
+	} else {
+		pos_a = runtime->dma_addr + st_off;
+		sz_a = runtime->dma_bytes - st_off;
+		pos_b = runtime->dma_addr;
+		sz_b = end_off;
+	}
+
+	if (for_cpu) {
+		dma_sync_single_for_cpu(card->dev, pos_a, sz_a, dir);
+		if (sz_b != 0) {
+			dma_sync_single_for_cpu(card->dev,
+				pos_b, sz_b, dir);
+		}
+	} else {
+		dma_sync_single_for_device(card->dev, pos_a, sz_a, dir);
+		if (sz_b != 0) {
+			dma_sync_single_for_device(card->dev,
+				pos_b, sz_b, dir);
+		}
+	}
+}
+
+static void i2s_pcm_sync_buffer(struct uniphier_pcm_sub *sb)
+{
+	struct snd_pcm_runtime *runtime = sb->substream->runtime;
+	u64 start;
+	u32 nextpos, nextsync;
+	u32 orgpos, orgsync;
+
+	start = virt_to_phys(runtime->dma_area);
+
+	/* NOTE: 1920 = 48kHz, 32bit, 2ch, 5ms */
+	if (sb->substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
+		orgpos = sb->rd_off;
+		orgsync = sb->sync_off;
+		nextpos = aio2013_rb_get_rp(sb) - start;
+		nextsync = (nextpos + 1920) % runtime->dma_bytes;
+
+		i2s_pcm_sync_single(sb, sb->rd_off, nextpos, 1,
+			DMA_TO_DEVICE);
+		i2s_pcm_sync_single(sb, sb->sync_off, nextsync, 0,
+			DMA_TO_DEVICE);
+
+		sb->rd_off = nextpos;
+		sb->sync_off = nextsync;
+	} else {
+		orgpos = sb->wr_off;
+		orgsync = sb->sync_off;
+		nextpos = aio2013_rb_get_wp(sb) - start;
+		nextsync = (nextpos + 1920) % runtime->dma_bytes;
+
+		i2s_pcm_sync_single(sb, sb->wr_off, nextpos, 1,
+			DMA_FROM_DEVICE);
+		i2s_pcm_sync_single(sb, sb->sync_off, nextsync, 0,
+			DMA_FROM_DEVICE);
+
+		sb->wr_off = nextpos;
+		sb->sync_off = nextsync;
+	}
+}
+
+int i2s_pcm_cmn_prepare_buf(struct uniphier_pcm_sub *sb)
+{
+	struct snd_pcm_runtime *runtime = sb->substream->runtime;
+
+	aio2013_rb_set_buffer(sb, runtime->dma_addr,
+		runtime->dma_addr + runtime->dma_bytes);
+
+	sb->rd_off = 0;
+	sb->wr_off = 0;
+	sb->sync_off = 0;
+
+	if (sb->substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
+		i2s_pcm_sync_single(sb, 0, runtime->dma_bytes, 1,
+			DMA_TO_DEVICE);
+	else
+		i2s_pcm_sync_single(sb, 0, runtime->dma_bytes, 1,
+			DMA_FROM_DEVICE);
+
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+static int uniphier_pcm_copy(struct snd_pcm_substream *substream, int chennel,
+			     snd_pcm_uframes_t pos, void __user *buf,
+			     snd_pcm_uframes_t count)
+{
+	struct snd_pcm_runtime *runtime = substream->runtime;
+	struct snd_soc_pcm_runtime *rtd = snd_pcm_substream_chip(substream);
+	struct device *dev = rtd->card->snd_card->dev;
+	size_t posb = frames_to_bytes(runtime, pos);
+	unsigned char *hwbuf = runtime->dma_area + posb;
+	dma_addr_t dmapos = runtime->dma_addr + posb;
+	size_t sz = frames_to_bytes(runtime, count);
+	long ret;
+
+	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
+		dma_sync_single_for_cpu(dev, dmapos, sz, DMA_TO_DEVICE);
+		ret = copy_from_user(hwbuf, buf, sz);
+		dma_sync_single_for_device(dev, dmapos, sz, DMA_TO_DEVICE);
+	} else {
+		dma_sync_single_for_cpu(dev, dmapos, sz, DMA_FROM_DEVICE);
+		ret = copy_to_user(buf, hwbuf, sz);
+		dma_sync_single_for_device(dev, dmapos, sz, DMA_FROM_DEVICE);
+	}
+	if (ret != 0)
+		return -EFAULT;
+
+	return 0;
+}
+
+static int uniphier_pcm_silence(struct snd_pcm_substream *substream,
+				int chennel, snd_pcm_uframes_t pos,
+				snd_pcm_uframes_t count)
+{
+	struct snd_pcm_runtime *runtime = substream->runtime;
+	struct snd_soc_pcm_runtime *rtd = snd_pcm_substream_chip(substream);
+	struct device *dev = rtd->card->snd_card->dev;
+	size_t posb = frames_to_bytes(runtime, pos);
+	unsigned char *hwbuf = runtime->dma_area + posb;
+	dma_addr_t dmapos = runtime->dma_addr + posb;
+	size_t sz = frames_to_bytes(runtime, count);
+
+	dma_sync_single_for_cpu(dev, dmapos, sz, DMA_TO_DEVICE);
+	memset(hwbuf, 0, sz);
+	dma_sync_single_for_device(dev, dmapos, sz, DMA_TO_DEVICE);
+
+	return 0;
+}
+

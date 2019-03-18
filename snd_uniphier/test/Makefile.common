@@ -1,0 +1,39 @@
+
+ALSA_BEEP_OBJS     = alsa_beep.o
+ALSA_PLAY_OBJS     = alsa_play.o
+ALSA_SEEK_OBJS     = alsa_seek.o
+ALSA_CAPTURE_OBJS  = alsa_capture.o
+ALSA_VOL_OBJS      = alsa_vol.o
+ALSA_IEC_OBJS      = alsa_iec.o
+ALSA_HWDEP_OBJS    = alsa_hwdep.o
+HW_PARAMS_OBJS     = hw_params.o
+APCMOUT_OBJS       = apcmout.o
+APCMOUT_LIBS       = -lfa
+
+alsa_beep: $(ALSA_BEEP_OBJS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(ALSA_BEEP_OBJS)
+
+alsa_play: $(ALSA_PLAY_OBJS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(ALSA_PLAY_OBJS)
+
+alsa_seek: $(ALSA_SEEK_OBJS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(ALSA_SEEK_OBJS)
+
+alsa_capture: $(ALSA_CAPTURE_OBJS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(ALSA_CAPTURE_OBJS)
+
+alsa_vol: $(ALSA_VOL_OBJS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(ALSA_VOL_OBJS)
+
+alsa_iec: $(ALSA_IEC_OBJS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(ALSA_IEC_OBJS)
+
+alsa_hwdep: $(ALSA_HWDEP_OBJS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(ALSA_HWDEP_OBJS)
+
+hw_params: $(HW_PARAMS_OBJS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(HW_PARAMS_OBJS)
+
+apcmout: $(APCMOUT_OBJS)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(APCMOUT_LIBS) -o $@ $(APCMOUT_OBJS)
+

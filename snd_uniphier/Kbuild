@@ -1,0 +1,36 @@
+CONFIG_SND_SOC_UNIPHIER_AIO ?= m
+CONFIG_SND_SOC_UNIPHIER_LD11 ?= y
+
+CONFIG_SND_SOC_UNIPHIER_EVEA_CODEC ?= m
+CONFIG_SND_SOC_UNIPHIER_SPDIF_TX ?= m
+CONFIG_SND_SOC_UNIPHIER_THRU ?= m
+CONFIG_SND_SOC_BD28623 ?= m
+
+ccflags-y += -DCONFIG_SND_SOC_UNIPHIER_LD11
+
+snd-soc-uniphier-aio2013-objs := aio-core.o aio-dma.o aio-cpu.o aio-compress.o
+snd-soc-uniphier-aio2013-$(CONFIG_SND_SOC_UNIPHIER_LD11) += aio-ld11.o
+snd-soc-uniphier-aio2013-y += aio-jack.o
+
+obj-$(CONFIG_SND_SOC_UNIPHIER_AIO) += snd-soc-uniphier-aio2013.o
+
+uniphier-evea-objs := evea.o
+obj-$(CONFIG_SND_SOC_UNIPHIER_EVEA_CODEC) += uniphier-evea.o
+
+uniphier-spdif_tx-objs := spdif_transmitter.o
+obj-$(CONFIG_SND_SOC_UNIPHIER_SPDIF_TX) += uniphier-spdif_tx.o
+
+uniphier-thru-out-objs := thru_out.o
+obj-$(CONFIG_SND_SOC_UNIPHIER_THRU) += uniphier-thru-out.o
+
+uniphier-thru-in-objs := thru_in.o
+obj-$(CONFIG_SND_SOC_UNIPHIER_THRU) += uniphier-thru-in.o
+
+uniphier-thru-io-objs := thru_io.o
+obj-$(CONFIG_SND_SOC_UNIPHIER_THRU) += uniphier-thru-io.o
+
+snd-soc-bd28623-objs := bd28623.o
+obj-$(CONFIG_SND_SOC_BD28623) += snd-soc-bd28623.o
+
+clean-files := Module.symvers modules.order *.ko *.mod.c *.o .*.cmd
+clean-dirs  := .tmp_versions

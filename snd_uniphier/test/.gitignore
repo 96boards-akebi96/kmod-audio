@@ -1,0 +1,12 @@
+# by make
+/*.o
+
+/alsa_beep
+/alsa_capture
+/alsa_play
+/alsa_seek
+/alsa_vol
+/alsa_iec
+/alsa_hwdep
+/hw_params
+/apcmout
