@@ -1,0 +1,4 @@
+* snd-uniphier driver
+
+This is an audio driver for UniPhier, that is based on simple-audio-card.
+This driver is applicable to kernel v4.4 only.
