@@ -362,48 +362,61 @@ static int aio_port_set_rate(struct uniphier_aio_sub *sub, int rate)
 {
 	struct regmap *r = sub->aio->chip->regmap;
 	struct device *dev = &sub->aio->chip->pdev->dev;
-	u32 v;
+	u32 v, c;
 
 	if (sub->swm->dir == PORT_DIR_OUTPUT) {
 		switch (rate) {
 		case 8000:
 			v = OPORTMXCTR1_FSSEL_8;
+			c = OPORTMXCHSTSPL_FS_32;
 			break;
 		case 11025:
 			v = OPORTMXCTR1_FSSEL_11_025;
+			c = OPORTMXCHSTSPL_FS_44_1;
 			break;
 		case 12000:
 			v = OPORTMXCTR1_FSSEL_12;
+			c = OPORTMXCHSTSPL_FS_48;
 			break;
 		case 16000:
 			v = OPORTMXCTR1_FSSEL_16;
+			c = OPORTMXCHSTSPL_FS_32;
 			break;
 		case 22050:
 			v = OPORTMXCTR1_FSSEL_22_05;
+			c = OPORTMXCHSTSPL_FS_22_05;
 			break;
 		case 24000:
 			v = OPORTMXCTR1_FSSEL_24;
+			c = OPORTMXCHSTSPL_FS_24;
 			break;
 		case 32000:
 			v = OPORTMXCTR1_FSSEL_32;
+			c = OPORTMXCHSTSPL_FS_32;
 			break;
 		case 44100:
 			v = OPORTMXCTR1_FSSEL_44_1;
+			c = OPORTMXCHSTSPL_FS_44_1;
 			break;
 		case 48000:
 			v = OPORTMXCTR1_FSSEL_48;
+			c = OPORTMXCHSTSPL_FS_48;
 			break;
 		case 88200:
 			v = OPORTMXCTR1_FSSEL_88_2;
+			c = OPORTMXCHSTSPL_FS_88_2;
 			break;
 		case 96000:
 			v = OPORTMXCTR1_FSSEL_96;
+			c = OPORTMXCHSTSPL_FS_96;
 			break;
 		case 176400:
 			v = OPORTMXCTR1_FSSEL_176_4;
+			c = OPORTMXCHSTSPL_FS_176_4;
 			break;
 		case 192000:
 			v = OPORTMXCTR1_FSSEL_192;
+			c = OPORTMXCHSTSPL_FS_192;
 			break;
 		default:
 			dev_err(dev, "Rate not supported(%d)\n", rate);
@@ -412,6 +425,10 @@ static int aio_port_set_rate(struct uniphier_aio_sub *sub, int rate)
 
 		regmap_update_bits(r, OPORTMXCTR1(sub->swm->oport.map),
 				   OPORTMXCTR1_FSSEL_MASK, v);
+		if (sub->swm->type == PORT_TYPE_SPDIF) {
+			regmap_update_bits(r, OPORTMXCHSTSPL(sub->swm->oport.map),
+				   OPORTMXCHSTSPL_FS_MASK, c);
+		}
 	} else {
 		switch (rate) {
 		case 8000:
